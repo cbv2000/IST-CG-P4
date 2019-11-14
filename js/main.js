@@ -39,7 +39,7 @@ function init() {
 
 	board = new Board(0, -1.5, 0, 30);
 	ball = new Ball(10, 2, 0, 2);
-	dice = new Dice(0, Math.sqrt(8) + 1, 0, 4);
+	dice = new Dice(0, 4 * Math.sqrt(3 / 4), 0, 4);
 	scene.add(board);
 	scene.add(ball);
 	scene.add(dice);
@@ -80,7 +80,7 @@ function addCamera(x, y, z, type) {
 
 function addScene() {
 	scene = new THREE.Scene();
-	scene.add(new THREE.AxesHelper(5));
+	scene.add(new THREE.AxesHelper(20));
 }
 
 //////////// UPDATE FUNCTIONS ////////////
@@ -142,7 +142,7 @@ function render() {
 }
 
 function update(delta) {
-	// dice.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), delta);
+	dice.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), delta);
 }
 
 function animate(ts) {
