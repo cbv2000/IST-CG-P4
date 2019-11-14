@@ -11,7 +11,7 @@ export default class Ball extends THREE.Mesh {
 
 		super(geo, material);
 		this.material = material;
-		this.size;
+		this.size = size;
 
 		this.position.set(x, y, z);
 		this.rotateY(-Math.PI / 2);

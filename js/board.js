@@ -4,7 +4,7 @@ export default class Board extends THREE.Mesh {
 	constructor(x, y, z, size) {
 		/* Textures */
 		const bmap = new THREE.TextureLoader().load('../assets/wood_bump.jpg');
-		var smap = new THREE.TextureLoader().load('../assets/grid_withborder.png');
+		const smap = new THREE.TextureLoader().load('../assets/grid_withborder.png');
 
 		let geo = new THREE.CubeGeometry(size, size / 10, size, size, size / 10, size);
 		let material = new THREE.MeshPhongMaterial({
