@@ -44,6 +44,5 @@ export default class Dice extends THREE.Mesh {
 		this.add(new THREE.AxesHelper(5));
 		this.rotateZ(Math.PI / 4);
 		this.rotateY(Math.PI / 4);
-		console.log(this);
 	}
 }

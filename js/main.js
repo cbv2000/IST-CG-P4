@@ -55,7 +55,6 @@ function init() {
 
 function addDirLight() {
 	dirLight = new THREE.DirectionalLight(0xffffff, 2);
-	console.log(cameras[0].position);
 	let pos = cameras[0].position;
 	dirLight.position.set(pos.x, pos.y, pos.z);
 	scene.add(dirLight);
