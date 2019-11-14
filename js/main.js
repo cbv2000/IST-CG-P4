@@ -26,7 +26,7 @@ function init() {
 	document.body.appendChild(renderer.domElement);
 	addScene();
 
-	cameras[0] = addCamera(0, 2, 20, 1); // pespective camera
+	cameras[0] = addCamera(0, 20, 20, 1); // pespective camera
 	cameras[1] = addCamera(0, 30, 0, 0); // ortogonal camera
 	camera = cameras[0];
 
@@ -57,7 +57,7 @@ function addDirLight() {
 	dirLight = new THREE.DirectionalLight(0xffffff, 2);
 	console.log(cameras[0].position);
 	let pos = cameras[0].position;
-	dirLight.position.set(pos.x, pos.y + 10, pos.z);
+	dirLight.position.set(pos.x, pos.y, pos.z);
 	scene.add(dirLight);
 }
 
