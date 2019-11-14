@@ -23,33 +23,61 @@ function createBoxWithRoundedEdges(width, height, depth, radius0, smoothness) {
 
 	return geometry;
 }
-
+let first = true;
 export default class Dice extends THREE.Mesh {
 	constructor(x, y, z, size) {
-		let material = texture =>
-			new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				map: new THREE.TextureLoader().load(texture),
-				bumpMap: new THREE.TextureLoader().load(texture),
-				bumpScale: 0.45,
-			});
-
-		// let geo = createBoxWithRoundedEdges(size, size, size, 0.4, size);
-		let geo = new THREE.BoxGeometry(size, size, size, 100, 100, 100);
-		let materials = [
-			material('../assets/dice-n1.png'),
-			material('../assets/dice-n5.png'),
-			material('../assets/dice-n2.png'),
-			material('../assets/dice-n6.png'),
-			material('../assets/dice-n3.png'),
-			material('../assets/dice-n4.png'),
+		let textures = [
+			'../assets/dice-n1.png',
+			'../assets/dice-n5.png',
+			'../assets/dice-n2.png',
+			'../assets/dice-n6.png',
+			'../assets/dice-n3.png',
+			'../assets/dice-n4.png',
 		];
 
-		super(geo, materials);
+		// let geo = createBoxWithRoundedEdges(size, size, size, 0.4, size);
+		let geo = new THREE.CubeGeometry(size, size, size, size, size, size);
+		let basic = textures.map(
+			t =>
+				new THREE.MeshBasicMaterial({
+					map: new THREE.TextureLoader().load(t),
+					color: 0xffffff,
+					wireframe: false,
+				})
+		);
+		let phong = textures.map(
+			t =>
+				new THREE.MeshPhongMaterial({
+					map: new THREE.TextureLoader().load(t),
+					bumpMap: new THREE.TextureLoader().load(t),
+					color: 0xffffff,
+					bumpScale: 0.3,
+					wireframe: false,
+				})
+		);
+
+		super(geo, phong);
+		this.textures = textures;
+		this.phong = phong;
+		this.basic = basic;
+
 		this.position.set(x, y, z);
 
 		this.add(new THREE.AxesHelper(5));
 
-		this.rotateOnAxis(new THREE.Vector3(1, 0, 1), Math.atan(1 / Math.sqrt(2)));
+		this.rotateX(Math.PI / 4);
+		this.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), Math.atan(1 / Math.sqrt(2)));
+	}
+
+	changeMaterial(material) {
+		this.material = material.type == 'MeshPhongMaterial' ? this.phong : this.basic;
+	}
+
+	toggleWireframe(state = !this.material[0].wireframe) {
+		for (let i = 0; i < this.textures.length; i++) {
+			this.phong[i].wireframe = state;
+			this.basic[i].wireframe = state;
+			this.material[i].wireframe = state;
+		}
 	}
 }
