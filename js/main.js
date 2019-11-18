@@ -11,11 +11,16 @@ var lastTimestamp = 0;
 var cameras = [];
 var camera = null;
 
+var materials = [];
+var material = null;
+
 var dirLight = null;
+var pointLight = null;
 
 var board = null;
-var ball = null;
 var dice = null;
+var ball = null;
+var ballSun = null;
 
 function init() {
 	renderer = new THREE.WebGLRenderer({
@@ -26,6 +31,10 @@ function init() {
 	document.body.appendChild(renderer.domElement);
 	addScene();
 
+	materials[0] = new THREE.MeshBasicMaterial();
+	materials[1] = new THREE.MeshPhongMaterial();
+	material = materials[1];
+
 	cameras[0] = addCamera(0, 20, 20, 1); // pespective camera
 	cameras[1] = addCamera(0, 30, 0, 0); // ortogonal camera
 	camera = cameras[0];
@@ -35,14 +44,18 @@ function init() {
 	camera.updateProjectionMatrix();
 	updateCameras();
 
-	addDirLight();
-
 	board = new Board(0, -1.5, 0, 30);
-	ball = new Ball(10, 2, 0, 2);
-	dice = new Dice(0, Math.sqrt(8) + 1, 0, 4);
+	dice = new Dice(0, 4 * Math.sqrt(3 / 4), 0, 4);
 	scene.add(board);
-	scene.add(ball);
 	scene.add(dice);
+
+	ballSun = new THREE.Object3D();
+	scene.add(ballSun);
+	ball = new Ball(10, 2, 0, 2);
+	ballSun.add(ball);
+
+	addDirLight();
+	addPointLight();
 
 	window.addEventListener('keydown', onKeyDown);
 	window.addEventListener('keyup', onKeyUp);
@@ -52,6 +65,12 @@ function init() {
 }
 
 //////////// ADD FUNCTIONS ////////////
+
+function addPointLight() {
+	pointLight = new THREE.PointLight(0xffffff, 5, board.size * Math.sqrt(2));
+	pointLight.position.set((2 * board.size) / 5, 1, (2 * board.size) / 5);
+	scene.add(pointLight);
+}
 
 function addDirLight() {
 	dirLight = new THREE.DirectionalLight(0xffffff, 2);
@@ -80,7 +99,7 @@ function addCamera(x, y, z, type) {
 
 function addScene() {
 	scene = new THREE.Scene();
-	scene.add(new THREE.AxesHelper(5));
+	scene.add(new THREE.AxesHelper(20));
 }
 
 //////////// UPDATE FUNCTIONS ////////////
@@ -134,6 +153,17 @@ function onKeyDown(e) {
 	keys[e.keyCode] = true;
 
 	switch (e.keyCode) {
+		case 68: // D
+			dirLight.visible = !dirLight.visible;
+			break;
+		case 80: // P
+			pointLight.visible = !pointLight.visible;
+			break;
+		case 76: // L
+			material = materials[(materials.indexOf(material) + 1) % 2];
+			break;
+		case 87: // W
+			break;
 	}
 }
 
@@ -142,7 +172,25 @@ function render() {
 }
 
 function update(delta) {
-	// dice.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), delta);
+	// Movement & Rotations
+	dice.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -delta);
+	ball.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), delta);
+	ballSun.rotateY(delta);
+
+	// Materials
+	if (keys[76]) {
+		keys[76] = false;
+		dice.changeMaterial(material);
+		ball.changeMaterial(material);
+		board.changeMaterial(material);
+	}
+
+	if (keys[87]) {
+		keys[87] = false;
+		board.toggleWireframe();
+		dice.toggleWireframe();
+		ball.toggleWireframe();
+	}
 }
 
 function animate(ts) {
