@@ -22,7 +22,7 @@ var dice = null;
 var ball = null;
 
 var ballMove = false;
-const ballAcc = 0.5;
+const ballAcc = 0.1;
 const ballSpeedLimit = 5;
 
 function init() {
@@ -176,6 +176,7 @@ function update(delta) {
 	// Calculations
 	if (ballMove && ball.speed < ballSpeedLimit) ball.speed += ballAcc;
 	else if (!ballMove && ball.speed > 0) ball.speed -= ballAcc;
+	else ball.speed = ball.speed <= 0 ? 0 : ballSpeedLimit;
 
 	// Movement & Rotations
 	dice.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -delta);
