@@ -17,6 +17,15 @@ export default class Ball extends THREE.Mesh {
 
 		this.position.set(x, y, z);
 		this.rotateY(-Math.PI / 2);
+
+		this.speed = 0;
+		this.sun = null;
+	}
+
+	addSun() {
+		this.sun = new THREE.Object3D();
+		this.sun.add(this);
+		return this.sun;
 	}
 
 	changeMaterial(material) {
@@ -28,5 +37,10 @@ export default class Ball extends THREE.Mesh {
 
 	toggleWireframe(state = !this.material.wireframe) {
 		this.material.wireframe = state;
+	}
+
+	updateMovement(delta) {
+		this.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), delta * this.speed);
+		this.sun.rotateY(delta * this.speed);
 	}
 }

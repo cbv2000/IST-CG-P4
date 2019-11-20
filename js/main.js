@@ -20,7 +20,10 @@ var pointLight = null;
 var board = null;
 var dice = null;
 var ball = null;
-var ballSun = null;
+
+var ballMove = false;
+const ballAcc = 0.1;
+const ballSpeedLimit = 5;
 
 function init() {
 	renderer = new THREE.WebGLRenderer({
@@ -46,13 +49,10 @@ function init() {
 
 	board = new Board(0, -1.5, 0, 30);
 	dice = new Dice(0, 4 * Math.sqrt(3 / 4), 0, 4);
+	ball = new Ball(10, 2, 0, 2);
 	scene.add(board);
 	scene.add(dice);
-
-	ballSun = new THREE.Object3D();
-	scene.add(ballSun);
-	ball = new Ball(10, 2, 0, 2);
-	ballSun.add(ball);
+	scene.add(ball.addSun());
 
 	addDirLight();
 	addPointLight();
@@ -162,7 +162,8 @@ function onKeyDown(e) {
 		case 76: // L
 			material = materials[(materials.indexOf(material) + 1) % 2];
 			break;
-		case 87: // W
+		case 66: // B
+			ballMove = !ballMove;
 			break;
 	}
 }
@@ -172,10 +173,14 @@ function render() {
 }
 
 function update(delta) {
+	// Calculations
+	if (ballMove && ball.speed < ballSpeedLimit) ball.speed += ballAcc;
+	else if (!ballMove && ball.speed > 0) ball.speed -= ballAcc;
+	else ball.speed = ball.speed <= 0 ? 0 : ballSpeedLimit;
+
 	// Movement & Rotations
 	dice.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -delta);
-	ball.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), delta);
-	ballSun.rotateY(delta);
+	ball.updateMovement(delta);
 
 	// Materials
 	if (keys[76]) {
