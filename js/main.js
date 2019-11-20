@@ -41,11 +41,9 @@ function init() {
 	material = materials[1];
 
 	cameras[0] = addCamera(0, 20, 20, 1); // pespective camera
-	cameras[1] = addCamera(0, 30, 0, 0); // ortogonal camera
 	camera = cameras[0];
 
 	cameras[0].lookAt(scene.position);
-	cameras[1].lookAt(scene.position);
 	camera.updateProjectionMatrix();
 	updateCameras();
 
