@@ -23,7 +23,7 @@ function createBoxWithRoundedEdges(width, height, depth, radius0, smoothness) {
 
 	return geometry;
 }
-let first = true;
+
 export default class Dice extends THREE.Mesh {
 	constructor(x, y, z, size) {
 		let textures = [
@@ -62,8 +62,6 @@ export default class Dice extends THREE.Mesh {
 		this.basic = basic;
 
 		this.position.set(x, y, z);
-
-		this.add(new THREE.AxesHelper(5));
 
 		this.rotateX(Math.PI / 4);
 		this.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), Math.atan(1 / Math.sqrt(2)));
