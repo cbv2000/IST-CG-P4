@@ -2,6 +2,7 @@ import './three.js';
 import Board from './board.js';
 import Ball from './ball.js';
 import Dice from './dice.js';
+import Pause from './pause.js';
 
 var renderer = null;
 var scene = null;
@@ -17,6 +18,7 @@ var material = null;
 var dirLight = null;
 var pointLight = null;
 
+var pause = null;
 var board = null;
 var dice = null;
 var ball = null;
@@ -39,23 +41,13 @@ function init() {
 	material = materials[1];
 
 	cameras[0] = addCamera(0, 20, 20, 1); // pespective camera
-	cameras[1] = addCamera(0, 30, 0, 0); // ortogonal camera
 	camera = cameras[0];
 
 	cameras[0].lookAt(scene.position);
-	cameras[1].lookAt(scene.position);
 	camera.updateProjectionMatrix();
 	updateCameras();
 
-	board = new Board(0, -1.5, 0, 30);
-	dice = new Dice(0, 4 * Math.sqrt(3 / 4), 0, 4);
-	ball = new Ball(10, 2, 0, 2);
-	scene.add(board);
-	scene.add(dice);
-	scene.add(ball.addSun());
-
-	addDirLight();
-	addPointLight();
+	sceneObjects();
 
 	window.addEventListener('keydown', onKeyDown);
 	window.addEventListener('keyup', onKeyUp);
@@ -65,6 +57,22 @@ function init() {
 }
 
 //////////// ADD FUNCTIONS ////////////
+
+function sceneObjects() {
+	board = new Board(0, -1.5, 0, 30);
+	dice = new Dice(0, 4 * Math.sqrt(3 / 4), 0, 4);
+	ball = new Ball(10, 2, 0, 2);
+	scene.add(board);
+	scene.add(dice);
+	scene.add(ball.addSun());
+
+	pause = new Pause(camera.position.x, camera.position.y - 10, camera.position.z - 10);
+	scene.add(pause);
+	pause.lookAt(camera.position);
+
+	addDirLight();
+	addPointLight();
+}
 
 function addPointLight() {
 	pointLight = new THREE.PointLight(0xffffff, 5, board.size * Math.sqrt(2));
@@ -99,7 +107,6 @@ function addCamera(x, y, z, type) {
 
 function addScene() {
 	scene = new THREE.Scene();
-	scene.add(new THREE.AxesHelper(20));
 }
 
 //////////// UPDATE FUNCTIONS ////////////
@@ -165,6 +172,11 @@ function onKeyDown(e) {
 		case 66: // B
 			ballMove = !ballMove;
 			break;
+		case 83: // S
+			pause.visible = !pause.visible;
+			break;
+		case 82: // R
+			break;
 	}
 }
 
@@ -173,6 +185,13 @@ function render() {
 }
 
 function update(delta) {
+	delta *= pause.visible ? 0 : 1;
+	if (pause.visible && keys[82]) {
+		while (scene.children.length > 0) scene.remove(scene.children[0]);
+		ballMove = false;
+		sceneObjects();
+	}
+
 	// Calculations
 	if (ballMove && ball.speed < ballSpeedLimit) ball.speed += ballAcc;
 	else if (!ballMove && ball.speed > 0) ball.speed -= ballAcc;
@@ -209,3 +228,53 @@ function animate(ts) {
 }
 
 init();
+
+/*
+
+var renderer;
+var scene;
+var keys;
+var lastTimestamp;
+var paused;
+
+var cameras;
+var camera;
+
+var materials;
+var material;
+
+var dirLight;
+var pointLight;
+
+var board;
+var dice;
+var ball;
+
+var ballMove;
+const ballAcc = 0.1;
+const ballSpeedLimit = 5;
+
+function globalVars() {
+	renderer = null;
+	scene = null;
+	keys = {};
+	lastTimestamp = 0;
+	paused = false;
+
+	cameras = [];
+	camera = null;
+
+	materials = [];
+	material = null;
+
+	dirLight = null;
+	pointLight = null;
+
+	board = null;
+	dice = null;
+	ball = null;
+
+	ballMove = false;
+}
+
+*/
